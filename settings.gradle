@@ -1,1 +1,3 @@
 include ':app'
+include ':AndroidUtils:library'
+include ':AndroidUtils'

@@ -23,3 +23,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# This dnsjava class uses old Sun API
+-dontnote org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
+-dontwarn org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
+-dontwarn java.awt.*
+-dontwarn org.slf4j.*
+
+# See http://stackoverflow.com/questions/5701126, happens in dnsjava
+-optimizations !code/allocation/variable
+-keep class android.support.v7.widget.SearchView { *; }
+-keepattributes SourceFile,LineNumberTable
