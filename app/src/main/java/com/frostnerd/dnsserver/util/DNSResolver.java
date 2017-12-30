@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import com.frostnerd.dnsserver.database.DatabaseHelper;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -84,6 +86,7 @@ public class DNSResolver {
         return result;
     }
 
+    // TODO Reject non-DNS packets (currently throws exception)
     public DNSResolveResult handlePossiblePacket(byte[] packetBytes, boolean resolveLocal) throws IOException {
         DNSMessage dnsMsg = new DNSMessage(packetBytes);
         if(dnsMsg.answerSection != null && dnsMsg.answerSection.size() != 0)return new DNSResolveResult(dnsMsg, true, null);

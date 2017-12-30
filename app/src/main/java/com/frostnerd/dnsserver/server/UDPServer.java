@@ -2,9 +2,8 @@ package com.frostnerd.dnsserver.server;
 
 import android.content.Context;
 
+import com.frostnerd.dnsserver.database.entities.DNSServerSetting;
 import com.frostnerd.dnsserver.util.DNSResolver;
-import com.frostnerd.dnsserver.util.IPPortPair;
-import com.frostnerd.utils.general.SortUtil;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -31,28 +30,29 @@ public class UDPServer extends DNSServer{
     private DatagramSocket serverSocket;
     private HashMap<ExpiredPacket, Query> futureAnswers = new HashMap<>();
 
-    public UDPServer(Context context, int port, IPPortPair upstreamServer, Configuration configuration) {
-        super(context, port, upstreamServer, configuration);
+    public UDPServer(Context context, DNSServerSetting settings) {
+        super(context, settings);
     }
 
     @Override
     public void run() {
         try {
-            serverSocket = new DatagramSocket(port);
+            serverSocket = new DatagramSocket(settings.getPort());
             //System.out.println("Listening on: " + serverSocket.getLocalSocketAddress());
             byte[] data = new byte[32767];
             DatagramPacket packet;
             DNSResolver.DNSResolveResult result;
+            InetAddressWithPort currentServer; //Holds the current server the packet is being sent to
             while(!stop){
                 packet = new DatagramPacket(data, data.length);
                 //System.out.println("Waiting for packet.");
                 serverSocket.receive(packet);
                 //System.out.println("Received a packet from " + packet.getAddress().getHostAddress());
-                result = resolver.handlePossiblePacket(data, configuration.shouldResolveLocal());
+                result = resolver.handlePossiblePacket(data, settings.shouldResolveLocal());
                 if(result != null){
                     if(result.isUpstreamAnswer()){
                         //System.out.println("Received upstream answer");
-                        if(configuration.shouldLogUpstreamQueryResults()){
+                        if(settings.isQueryResponseLoggingEnabled()){
                             for(Record<? extends Data> record: result.getMessage().answerSection){
                                 queryLogger.logUpstreamQueryResult(result.getQuery(),
                                         record.getPayload().toString(),record.type);
@@ -76,7 +76,7 @@ public class UDPServer extends DNSServer{
                         queryListener.queryReceived(packet.getAddress().getHostAddress(), result.getQuery(), result.getType(), true);
                         //System.out.println("Forwarding question for " + result.getQuery() + " of type: " + result.getType());
                         futureAnswers.put(new ExpiredPacket(packet), new Query(result));
-                        serverSocket.send(new DatagramPacket(packet.getData(), packet.getLength(), upstreamServerAddress, upstreamServer.getPort()));
+                        serverSocket.send(new DatagramPacket(packet.getData(), packet.getLength(), (currentServer=getUpstreamAddress()).getAddress(), currentServer.getPort()));
                     }else{
                         queryListener.queryReceived(packet.getAddress().getHostAddress(), result.getQuery(), result.getType(), false);
                         byte[] dnsData = result.getMessage().toArray();
@@ -86,9 +86,14 @@ public class UDPServer extends DNSServer{
                 }else System.out.println("RESULT NULL");
             }
         } catch (Exception e) {
-            if(configuration.getErrorListener() != null)configuration.getErrorListener().onError(e);
+            if(settings.getErrorListener() != null)settings.getErrorListener().onError(e);
             e.printStackTrace();
         }
+    }
+
+    //TODO calculate the best server to ask
+    private InetAddressWithPort getUpstreamAddress(){
+        return primaryAddress;
     }
 
     private boolean containsType(List<Record<? extends Data>> records, Record.TYPE type){
@@ -100,12 +105,11 @@ public class UDPServer extends DNSServer{
     }
 
     @Override
-    public void stopServer() {
+    protected void stopServer() {
         stop = true;
         serverSocket.close();
         futureAnswers.clear();
         serverSocket = null;
-        upstreamServerAddress = null;
         futureAnswers = null;
     }
 
@@ -113,16 +117,16 @@ public class UDPServer extends DNSServer{
         private InetAddress address;
         private int port;
 
-        public ExpiredPacket(DatagramPacket packet){
+        ExpiredPacket(DatagramPacket packet){
             this.address = packet.getAddress();
             this.port = packet.getPort();
         }
 
-        public InetAddress getAddress() {
+        InetAddress getAddress() {
             return address;
         }
 
-        public int getPort() {
+        int getPort() {
             return port;
         }
 
@@ -136,20 +140,20 @@ public class UDPServer extends DNSServer{
         private Record.TYPE type;
         private String query;
 
-        public Query(DNSResolver.DNSResolveResult result){
+        Query(DNSResolver.DNSResolveResult result){
             this(result.getType(), result.getQuery());
         }
 
-        public Query(Record.TYPE type, String query) {
+        Query(Record.TYPE type, String query) {
             this.type = type;
             this.query = query;
         }
 
-        public Record.TYPE getType() {
+        Record.TYPE getType() {
             return type;
         }
 
-        public String getQuery() {
+        private String getQuery() {
             return query;
         }
     }

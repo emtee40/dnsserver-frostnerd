@@ -2,6 +2,8 @@ package com.frostnerd.dnsserver.util;
 
 import android.content.Context;
 
+import com.frostnerd.dnsserver.database.DatabaseHelper;
+
 import de.measite.minidns.Record;
 
 /**
