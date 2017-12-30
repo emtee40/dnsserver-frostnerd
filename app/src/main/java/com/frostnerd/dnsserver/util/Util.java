@@ -3,28 +3,26 @@ package com.frostnerd.dnsserver.util;
 import android.content.Context;
 
 import com.frostnerd.dnsserver.database.DatabaseHelper;
-import com.frostnerd.dnsserver.database.entities.IPPortPair;
+import com.frostnerd.dnsserver.database.ServerDatabaseHelper;
+import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
+import com.frostnerd.dnsserver.database.entities.main.IPPortPair;
 import com.frostnerd.utils.networking.NetworkUtil;
 
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
  * Created by Daniel on 25.10.2017.
  */
 
-public class Util {
+public final class Util {
     private static DatabaseHelper databaseHelper;
     private static DNSResolver dnsResolver;
-    private static Pattern ipv6WithPort = Pattern.compile("(\\[[0-9a-f:]+\\]:[0-9]{1,5})|([0-9a-f:]+)");
-    private static Pattern ipv4WithPort = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}(:[0-9]{1,5})?");
+    private static final Pattern ipv6WithPort = Pattern.compile("(\\[[0-9a-f:]+\\]:[0-9]{1,5})|([0-9a-f:]+)");
+    private static final Pattern ipv4WithPort = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}(:[0-9]{1,5})?");
 
-
-    public static DatabaseHelper getDatabaseHelper(Context context){
+    public static DatabaseHelper getMainDatabase(Context context){
         return databaseHelper == null ? databaseHelper = new DatabaseHelper(context) : databaseHelper;
-    }
-
-    public static DNSResolver getDnsResolver(Context context){
-        return dnsResolver == null ? dnsResolver = new DNSResolver(context) : dnsResolver;
     }
 
     public static IPPortPair validateInput(String input, boolean iPv6, boolean allowEmpty, boolean allowLoopback) {

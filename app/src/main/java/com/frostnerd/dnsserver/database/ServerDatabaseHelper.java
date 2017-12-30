@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
-import com.frostnerd.dnsserver.database.entities.main.IPPortPair;
+import com.frostnerd.dnsserver.database.entities.server.DNSEntry;
+import com.frostnerd.dnsserver.database.entities.server.DNSQuery;
+import com.frostnerd.dnsserver.database.entities.server.UpstreamResponse;
 import com.frostnerd.utils.database.orm.Entity;
 
 import java.util.HashSet;
@@ -19,17 +21,17 @@ import java.util.Set;
  * <p>
  * development@frostnerd.com
  */
-public final class DatabaseHelper extends com.frostnerd.utils.database.DatabaseHelper {
-    private static final String DATABASE_NAME = "main";
+public final class ServerDatabaseHelper extends com.frostnerd.utils.database.DatabaseHelper {
     private static final int DATABASE_VERSION = 1;
     private static final Set<Class<? extends Entity>> entities = new HashSet<>();
     static{
-        entities.add(IPPortPair.class);
-        entities.add(DNSServerSetting.class);
+        entities.add(DNSQuery.class);
+        entities.add(DNSEntry.class);
+        entities.add(UpstreamResponse.class);
     }
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, DATABASE_VERSION, entities);
+    public ServerDatabaseHelper(Context context, DNSServerSetting settings){
+        super(context, settings.getName(), DATABASE_VERSION, entities);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.frostnerd.dnsserver.database.entities;
+package com.frostnerd.dnsserver.database.entities.main;
 
 import com.frostnerd.dnsserver.util.Util;
 import com.frostnerd.utils.database.orm.Entity;

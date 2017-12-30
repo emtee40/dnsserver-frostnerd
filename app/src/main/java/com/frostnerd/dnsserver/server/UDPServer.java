@@ -2,7 +2,7 @@ package com.frostnerd.dnsserver.server;
 
 import android.content.Context;
 
-import com.frostnerd.dnsserver.database.entities.DNSServerSetting;
+import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
 import com.frostnerd.dnsserver.util.DNSResolver;
 
 import java.net.DatagramPacket;

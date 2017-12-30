@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.frostnerd.dnsserver.database.DatabaseHelper;
+import com.frostnerd.dnsserver.database.ServerDatabaseHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,11 +35,11 @@ public class DNSResolver {
             "SELECT Target FROM DNSRules WHERE IPv6=? AND Wildcard=1 AND ? REGEXP Domain LIMIT 1";
     private static final String NON_WILDCARD_QUERY = "SELECT Target FROM DNSRules WHERE Domain=? AND IPv6=? AND Wildcard=0";
     private static final String SUM_WILDCARD_QUERY = "SELECT SUM(Wildcard) FROM DNSRules";
-    private DatabaseHelper db;
+    private ServerDatabaseHelper db;
     private int wildcardCount;
 
-    public DNSResolver(Context context) {
-        db = Util.getDatabaseHelper(context);
+    public DNSResolver(Context context, ServerDatabaseHelper serverDatabase) {
+        db = serverDatabase;
         Cursor cursor = db.getReadableDatabase().rawQuery(SUM_WILDCARD_QUERY, null);
         if (cursor.moveToFirst()) {
             wildcardCount = cursor.getInt(0);
@@ -47,7 +48,6 @@ public class DNSResolver {
     }
 
     public void cleanup(){
-        db.close();
         db = null;
     }
 

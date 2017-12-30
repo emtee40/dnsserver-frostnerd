@@ -2,7 +2,8 @@ package com.frostnerd.dnsserver.server;
 
 import android.content.Context;
 
-import com.frostnerd.dnsserver.database.entities.DNSServerSetting;
+import com.frostnerd.dnsserver.database.ServerDatabaseHelper;
+import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
 import com.frostnerd.dnsserver.util.DNSResolver;
 import com.frostnerd.dnsserver.util.QueryLogger;
 import com.frostnerd.dnsserver.util.Util;
@@ -27,16 +28,17 @@ public abstract class DNSServer implements Runnable {
     InetAddressWithPort primaryAddress, secondaryAddress;
     QueryLogger queryLogger;
     QueryListener queryListener;
+    ServerDatabaseHelper serverDatabase;
 
     DNSServer(Context context, DNSServerSetting settings) {
-        this.resolver = Util.getDnsResolver(context);
+        this.resolver = new DNSResolver(context, serverDatabase = new ServerDatabaseHelper(context, settings));
         this.settings = settings;
         try {
             this.primaryAddress = new InetAddressWithPort(InetAddress.getByName(settings.getUpstreamPrimary().getAddress()), settings.getUpstreamPrimary().getPort());
             this.secondaryAddress = new InetAddressWithPort(InetAddress.getByName(settings.getUpstreamSecondary().getAddress()), settings.getUpstreamSecondary().getPort());
         } catch (UnknownHostException ignored) {}
         if(settings.isQueryLoggingEnabled() || settings.isQueryResponseLoggingEnabled())
-            queryLogger = new QueryLogger(context);
+            queryLogger = new QueryLogger(context, serverDatabase);
 
             if(settings.isQueryLoggingEnabled() && settings.getQueryListener() != null){
                 queryListener = new QueryListener() {
@@ -76,6 +78,8 @@ public abstract class DNSServer implements Runnable {
         stopServer();
         resolver.cleanup();
         if(queryLogger != null)queryLogger.cleanup();
+        serverDatabase.close();
+        serverDatabase = null;
         resolver = null;
         queryLogger = null;
         primaryAddress = null;

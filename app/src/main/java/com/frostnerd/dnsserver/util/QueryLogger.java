@@ -3,6 +3,7 @@ package com.frostnerd.dnsserver.util;
 import android.content.Context;
 
 import com.frostnerd.dnsserver.database.DatabaseHelper;
+import com.frostnerd.dnsserver.database.ServerDatabaseHelper;
 
 import de.measite.minidns.Record;
 
@@ -11,10 +12,10 @@ import de.measite.minidns.Record;
  */
 
 public class QueryLogger {
-    private DatabaseHelper databaseHelper;
+    private ServerDatabaseHelper serverDatabase;
 
-    public QueryLogger(Context context){
-        this.databaseHelper = Util.getDatabaseHelper(context);
+    public QueryLogger(Context context, ServerDatabaseHelper serverDatabase){
+        this.serverDatabase = serverDatabase;
     }
 
     public void logQuery(String host, String query, Record.TYPE type, boolean wasForwarded){
@@ -26,7 +27,6 @@ public class QueryLogger {
     }
 
     public void cleanup(){
-        databaseHelper.close();
-        databaseHelper = null;
+        serverDatabase = null;
     }
 }
