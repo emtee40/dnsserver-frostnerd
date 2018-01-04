@@ -33,6 +33,8 @@
 -optimizations !code/allocation/variable
 -keep class android.support.v7.widget.SearchView { *; }
 -keepattributes SourceFile,LineNumberTable
+
+-keep public class * extends com.frostnerd.utils.database.orm.Serializer
 -keepclassmembers public class * extends com.frostnerd.utils.database.orm.Serializer {
    public <init>(...);
    private <fields>;
