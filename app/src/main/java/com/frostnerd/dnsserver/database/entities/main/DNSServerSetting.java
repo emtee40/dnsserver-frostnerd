@@ -1,12 +1,14 @@
 package com.frostnerd.dnsserver.database.entities.main;
 
 
+import com.frostnerd.dnsserver.database.serializers.IPPortSerializer;
 import com.frostnerd.dnsserver.server.DNSServer;
 import com.frostnerd.utils.database.orm.Entity;
 import com.frostnerd.utils.database.orm.annotations.Ignore;
 import com.frostnerd.utils.database.orm.annotations.Named;
 import com.frostnerd.utils.database.orm.annotations.NotNull;
 import com.frostnerd.utils.database.orm.annotations.RowID;
+import com.frostnerd.utils.database.orm.annotations.Serialized;
 import com.frostnerd.utils.database.orm.annotations.Table;
 
 import java.io.Serializable;
@@ -33,8 +35,10 @@ public class DNSServerSetting extends Entity implements Serializable{
     private int serverTimeout;
     @Named(name = "UpstreamPrimary")
     @NotNull
+    @Serialized(using = IPPortSerializer.class)
     private IPPortPair upstreamPrimary;
     @Named(name = "UpstreamSecondary")
+    @Serialized(using = IPPortSerializer.class)
     private IPPortPair upstreamSecondary;
     @Named(name = "LogQueries")
     private boolean logQueries;
@@ -44,6 +48,22 @@ public class DNSServerSetting extends Entity implements Serializable{
     private boolean upstreamUDP;
     @Named(name = "ResolveLocal")
     private boolean resolveLocal;
+
+    public DNSServerSetting(){
+
+    }
+
+    public DNSServerSetting(String name, int port, int serverTimeout, IPPortPair upstreamPrimary, IPPortPair upstreamSecondary, boolean logQueries, boolean logQueryResponses, boolean upstreamUDP, boolean resolveLocal){
+        this.name = name;
+        this.port = port;
+        this.serverTimeout = serverTimeout;
+        this.upstreamPrimary = upstreamPrimary;
+        this.upstreamSecondary = upstreamSecondary;
+        this.logQueries = logQueries;
+        this.logQueryResponses = logQueryResponses;
+        this.upstreamUDP = upstreamUDP;
+        this.resolveLocal = resolveLocal;
+    }
 
     @Ignore
     private DNSServer.ErrorListener errorListener;
