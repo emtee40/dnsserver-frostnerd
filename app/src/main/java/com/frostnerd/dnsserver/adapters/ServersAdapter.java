@@ -51,7 +51,20 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
                 else return o1.getName().compareTo(o2.getName());
             }
         });
-        for(DNSServerSetting s: dnsServerSettings) System.out.println(s.getName());
+    }
+
+    private void updateOrder(DNSServerSetting targeting, boolean started){
+        int position = dnsServerSettings.indexOf(targeting);
+        Collections.sort(dnsServerSettings, new Comparator<DNSServerSetting>() {
+            @Override
+            public int compare(DNSServerSetting o1, DNSServerSetting o2) {
+                if(o1.isServerRunning() && !o2.isServerRunning())return -1;
+                else if(o2.isServerRunning() && !o1.isServerRunning())return 1;
+                else return o1.getName().compareTo(o2.getName());
+            }
+        });
+        int newPosition = dnsServerSettings.indexOf(targeting);
+        notifyItemMoved(position, newPosition);
     }
 
     @Override
@@ -82,6 +95,7 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
                     public void run() {
                         indicatorView.setBackgroundColor(Color.parseColor("#00FF00"));
                         startStopButton.setImageResource(R.drawable.ic_stop);
+                        updateOrder(setting, true);
                     }
                 });
             }
@@ -93,6 +107,7 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
                     public void run() {
                         indicatorView.setBackgroundColor(serverNotRunningColor);
                         startStopButton.setImageResource(R.drawable.ic_play);
+                        updateOrder(setting,false);
                     }
                 });
             }
