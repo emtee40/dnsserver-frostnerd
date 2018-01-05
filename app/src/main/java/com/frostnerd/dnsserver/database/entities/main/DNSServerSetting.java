@@ -56,6 +56,10 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
     private boolean resolveLocal;
     @Named(name = "UDP")
     private boolean udp = true;
+    @Named(name = "IPWhitelist")
+    private boolean ipWhitelist = false;
+    @Named(name = "StartOnBoot")
+    private boolean startOnBoot = false;
 
     @Ignore
     private boolean serverRunning;
@@ -100,6 +104,10 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
 
     public void setLocalRedirectPort(int localRedirectPort) {
         this.localRedirectPort = localRedirectPort;
+    }
+
+    public boolean shouldStartOnBoot(){
+        return startOnBoot;
     }
 
     public boolean isUdp() {

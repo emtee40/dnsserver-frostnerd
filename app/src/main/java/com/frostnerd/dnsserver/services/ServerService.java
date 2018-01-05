@@ -10,11 +10,13 @@ import android.support.v4.app.NotificationCompat;
 
 import com.frostnerd.dnsserver.R;
 import com.frostnerd.dnsserver.activities.MainActivity;
+import com.frostnerd.dnsserver.database.DatabaseHelper;
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
 import com.frostnerd.dnsserver.server.DNSServer;
 import com.frostnerd.dnsserver.server.TCPServer;
 import com.frostnerd.dnsserver.server.UDPServer;
 import com.frostnerd.dnsserver.util.Util;
+import com.frostnerd.utils.database.orm.parser.Column;
 import com.frostnerd.utils.database.orm.statementoptions.queryoptions.WhereCondition;
 import com.frostnerd.utils.services.NotificationService;
 
@@ -32,7 +34,7 @@ import java.util.HashMap;
 public class ServerService extends NotificationService {
     private NotificationCompat.Builder notificationBuilder;
     private HashMap<DNSServer, Thread> servers = new HashMap<>();
-    public static final String COMMAND_START_SERVER = "start_server", COMMAND_STOP_SERVER = "stop_server";
+    public static final String COMMAND_START_SERVER = "start_server", COMMAND_STOP_SERVER = "stop_server", COMMAND_START_MULTIPLE_SERVERS = "start_servers";
 
     @Override
     public void onCreate() {
@@ -65,6 +67,18 @@ public class ServerService extends NotificationService {
                     servers.remove(server);
                     break;
                 }
+            }
+        }else if(intent.hasExtra(COMMAND_START_MULTIPLE_SERVERS)){
+            DatabaseHelper db = Util.getMainDatabase(this);
+            Column<DNSServerSetting> column = db.findColumn(DNSServerSetting.class, "name");
+            for(String name: intent.getStringArrayListExtra(COMMAND_START_MULTIPLE_SERVERS)){
+                DNSServerSetting settings = db.getSQLHandler(DNSServerSetting.class).
+                        selectFirstRow(Util.getMainDatabase(this), true,
+                                WhereCondition.equal(column, name));
+                DNSServer server = settings.isUdp() ? new UDPServer(this, settings) : new TCPServer(this, settings);
+                Thread thread = new Thread(server);
+                servers.put(server, thread);
+                thread.start();
             }
         }
         if(servers.size() == 0){
