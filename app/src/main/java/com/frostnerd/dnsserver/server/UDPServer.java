@@ -37,6 +37,7 @@ public class UDPServer extends DNSServer{
     @Override
     public void run() {
         try {
+            settings.setServerRunning(true);
             serverSocket = new DatagramSocket(settings.getPort());
             //System.out.println("Listening on: " + serverSocket.getLocalSocketAddress());
             byte[] data = new byte[32767];
@@ -86,7 +87,8 @@ public class UDPServer extends DNSServer{
                 }else System.out.println("RESULT NULL");
             }
         } catch (Exception e) {
-            if(settings.getErrorListener() != null)settings.getErrorListener().onError(e);
+            if(e.getMessage().equalsIgnoreCase("Socket closed"))return;
+            if(settings != null && settings.getErrorListener() != null)settings.getErrorListener().onError(e);
             e.printStackTrace();
         }
     }
