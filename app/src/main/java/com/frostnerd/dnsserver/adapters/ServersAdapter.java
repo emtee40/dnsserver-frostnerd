@@ -1,7 +1,11 @@
 package com.frostnerd.dnsserver.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +15,7 @@ import android.widget.TextView;
 
 import com.frostnerd.dnsserver.R;
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
+import com.frostnerd.dnsserver.services.ServerService;
 
 import java.util.List;
 
@@ -26,13 +31,15 @@ import java.util.List;
 public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder> {
     private LayoutInflater layoutInflater;
     private List<DNSServerSetting> dnsServerSettings;
-    private static final int serverNotRunningColor = Color.parseColor("#F44336");
+    private static final int serverNotRunningColor = Color.parseColor("#F44336"), serverRunningColor = Color.parseColor("#00FF00");
     private String portText;
+    private Context context;
 
     public ServersAdapter(Context context, List<DNSServerSetting> serverSettings){
         layoutInflater = LayoutInflater.from(context);
         portText = context.getString(R.string.server_port_label);
         this.dnsServerSettings = serverSettings;
+        this.context = context;
     }
 
     @Override
@@ -42,7 +49,7 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        DNSServerSetting setting = dnsServerSettings.get(position);
+        final DNSServerSetting setting = dnsServerSettings.get(position);
         setting.clearServerStateListeners();
         ((TextView)holder.itemView.findViewById(R.id.server_name)).setText(setting.getName());
         ((TextView)holder.itemView.findViewById(R.id.server_port)).setText(portText.replace("[x]", "" + setting.getPort()));
@@ -51,18 +58,40 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
         if(!setting.isServerRunning()){
             indicatorView.setBackgroundColor(serverNotRunningColor);
             startStopButton.setImageResource(R.drawable.ic_play);
+        }else{
+            indicatorView.setBackgroundColor(serverRunningColor);
+            startStopButton.setImageResource(R.drawable.ic_stop);
         }
         setting.addServerStateListener(new DNSServerSetting.ServerStateListener() {
             @Override
             public void serverStarted() {
-                indicatorView.setBackgroundColor(Color.parseColor("#00FF00"));
-                startStopButton.setImageResource(R.drawable.ic_stop);
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        indicatorView.setBackgroundColor(Color.parseColor("#00FF00"));
+                        startStopButton.setImageResource(R.drawable.ic_stop);
+                    }
+                });
             }
 
             @Override
             public void serverStopped() {
-                indicatorView.setBackgroundColor(serverNotRunningColor);
-                startStopButton.setImageResource(R.drawable.ic_play);
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        indicatorView.setBackgroundColor(serverNotRunningColor);
+                        startStopButton.setImageResource(R.drawable.ic_play);
+                    }
+                });
+            }
+        });
+        startStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String cmd = setting.isServerRunning() ? ServerService.COMMAND_STOP_SERVER : ServerService.COMMAND_START_SERVER;
+                Intent intent = new Intent(context, ServerService.class).putExtra(cmd, setting.getName());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)context.startForegroundService(intent);
+                else context.startService(new Intent(context, ServerService.class));
             }
         });
     }
