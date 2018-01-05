@@ -17,6 +17,9 @@ import com.frostnerd.dnsserver.R;
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
 import com.frostnerd.dnsserver.services.ServerService;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -40,6 +43,15 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
         portText = context.getString(R.string.server_port_label);
         this.dnsServerSettings = serverSettings;
         this.context = context;
+        Collections.sort(dnsServerSettings, new Comparator<DNSServerSetting>() {
+            @Override
+            public int compare(DNSServerSetting o1, DNSServerSetting o2) {
+                if(o1.isServerRunning() && !o2.isServerRunning())return -1;
+                else if(o2.isServerRunning() && !o1.isServerRunning())return 1;
+                else return o1.getName().compareTo(o2.getName());
+            }
+        });
+        for(DNSServerSetting s: dnsServerSettings) System.out.println(s.getName());
     }
 
     @Override
