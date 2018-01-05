@@ -4,8 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 
-import com.frostnerd.dnsserver.database.DatabaseHelper;
 import com.frostnerd.dnsserver.database.ServerDatabaseHelper;
+import com.frostnerd.dnsserver.database.entities.server.DNSEntry;
+import com.frostnerd.utils.database.orm.parser.Column;
+import com.frostnerd.utils.database.orm.parser.ParsedEntity;
+import com.frostnerd.utils.database.orm.statementoptions.queryoptions.WhereCondition;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,22 +32,29 @@ import de.measite.minidns.record.Data;
  * development@frostnerd.com
  */
 public class DNSResolver {
-    private static final String WILDCARD_QUERY_RANDOM =
-            "SELECT Target FROM DNSRules WHERE IPv6=? AND Wildcard=1 AND ? REGEXP Domain ORDER BY RANDOM() LIMIT 1";
-    private static final String WILDCARD_QUERY_FIRST =
-            "SELECT Target FROM DNSRules WHERE IPv6=? AND Wildcard=1 AND ? REGEXP Domain LIMIT 1";
-    private static final String NON_WILDCARD_QUERY = "SELECT Target FROM DNSRules WHERE Domain=? AND IPv6=? AND Wildcard=0";
-    private static final String SUM_WILDCARD_QUERY = "SELECT SUM(Wildcard) FROM DNSRules";
     private ServerDatabaseHelper db;
-    private int wildcardCount;
+    private final int wildcardCount;
+    private final String WILDCARD_QUERY_RANDOM;
+    private final String WILDCARD_QUERY_FIRST;
+    private final String NON_WILDCARD_QUERY;
 
     public DNSResolver(Context context, ServerDatabaseHelper serverDatabase) {
         db = serverDatabase;
-        Cursor cursor = db.getReadableDatabase().rawQuery(SUM_WILDCARD_QUERY, null);
-        if (cursor.moveToFirst()) {
-            wildcardCount = cursor.getInt(0);
-        }
-        cursor.close();
+        ParsedEntity<DNSEntry> ruleEntity = db.getSQLHandler(DNSEntry.class);
+        Column<DNSEntry> targetColumn = ruleEntity.getTable().findColumn("target");
+        Column<DNSEntry> hostColumn = ruleEntity.getTable().findColumn("host");
+        Column<DNSEntry> ipv6Column = ruleEntity.getTable().findColumn("ipv6");
+        Column<DNSEntry> wildcardColumn = ruleEntity.getTable().findColumn("wildcard");
+        wildcardCount = ruleEntity.getCount(db, WhereCondition.equal(wildcardColumn, "1"));
+        WILDCARD_QUERY_RANDOM = "SELECT " + targetColumn.getColumnName() + " FROM " + ruleEntity.getTableName() +
+                " WHERE " + ipv6Column.getColumnName() + "" + "=? AND " + wildcardColumn.getColumnName()
+                + "=1 AND ? REGEXP " + hostColumn.getColumnName() + " ORDER BY RANDOM() LIMIT 1";
+        WILDCARD_QUERY_FIRST = "SELECT " + targetColumn.getColumnName() + " FROM " + ruleEntity.getTableName() +
+                " WHERE " + ipv6Column.getColumnName() + "" + "=? AND " + wildcardColumn.getColumnName()
+                + "=1 AND ? REGEXP " + hostColumn.getColumnName() + " LIMIT 1";
+        NON_WILDCARD_QUERY = "SELECT " + targetColumn.getColumnName() + " FROM " + ruleEntity.getTableName() +
+                " WHERE " + hostColumn.getColumnName() + "=? AND " + ipv6Column.getColumnName() + "=? AND " +
+                wildcardColumn.getColumnName() + "=0";
     }
 
     public void cleanup(){
