@@ -1,9 +1,11 @@
 package com.frostnerd.dnsserver.database.entities.main;
 
 
+import android.content.Context;
+
 import com.frostnerd.dnsserver.database.serializers.IPPortSerializer;
 import com.frostnerd.dnsserver.server.DNSServer;
-import com.frostnerd.utils.database.orm.Entity;
+import com.frostnerd.utils.database.orm.SingletonEntity;
 import com.frostnerd.utils.database.orm.annotations.Ignore;
 import com.frostnerd.utils.database.orm.annotations.Named;
 import com.frostnerd.utils.database.orm.annotations.NotNull;
@@ -23,7 +25,7 @@ import java.io.Serializable;
  * development@frostnerd.com
  */
 @Table(name = "DNSServerSetting")
-public class DNSServerSetting extends Entity implements Serializable{
+public class DNSServerSetting extends SingletonEntity implements Serializable{
     @RowID
     private int rowID;
     @Named(name = "Name")
@@ -65,6 +67,11 @@ public class DNSServerSetting extends Entity implements Serializable{
         this.logQueryResponses = logQueryResponses;
         this.upstreamUDP = upstreamUDP;
         this.resolveLocal = resolveLocal;
+    }
+
+    public boolean isServerRunning(Context context){
+        //TODO
+        return false;
     }
 
     @Ignore
