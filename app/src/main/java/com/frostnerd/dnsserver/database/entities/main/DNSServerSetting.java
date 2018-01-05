@@ -111,7 +111,7 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
     }
 
     public int getPort() {
-        return localRedirectPort == -1 ? port : localRedirectPort;
+        return port;
     }
 
     public int getServerTimeout() {

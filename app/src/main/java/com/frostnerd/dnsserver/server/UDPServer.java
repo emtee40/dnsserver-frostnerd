@@ -38,7 +38,7 @@ public class UDPServer extends DNSServer{
     public void run() {
         try {
             settings.setServerRunning(true);
-            serverSocket = new DatagramSocket(settings.getPort());
+            serverSocket = new DatagramSocket(settings.getLocalRedirectPort() == -1 ? settings.getPort() : settings.getLocalRedirectPort());
             //System.out.println("Listening on: " + serverSocket.getLocalSocketAddress());
             byte[] data = new byte[32767];
             DatagramPacket packet;
