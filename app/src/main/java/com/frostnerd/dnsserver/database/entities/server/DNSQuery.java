@@ -1,6 +1,8 @@
 package com.frostnerd.dnsserver.database.entities.server;
 
 import com.frostnerd.utils.database.orm.Entity;
+import com.frostnerd.utils.database.orm.annotations.Named;
+import com.frostnerd.utils.database.orm.annotations.PrimaryKey;
 import com.frostnerd.utils.database.orm.annotations.Table;
 
 /**
@@ -14,5 +16,34 @@ import com.frostnerd.utils.database.orm.annotations.Table;
  */
 @Table(name = "DNSQuery")
 public class DNSQuery extends Entity {
+    @PrimaryKey
+    @Named(name = "Host")
+    private String host;
+    @Named(name = "Ipv6")
+    private boolean ipv6;
+    @PrimaryKey
+    @Named(name = "Time")
+    private long time;
 
+    public DNSQuery(String host, boolean ipv6, long time) {
+        this.host = host;
+        this.ipv6 = ipv6;
+        this.time = time;
+    }
+
+    public DNSQuery(){
+
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public boolean isIpv6() {
+        return ipv6;
+    }
+
+    public long getTime() {
+        return time;
+    }
 }

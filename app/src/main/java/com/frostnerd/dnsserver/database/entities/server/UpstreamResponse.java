@@ -1,6 +1,8 @@
 package com.frostnerd.dnsserver.database.entities.server;
 
 import com.frostnerd.utils.database.orm.Entity;
+import com.frostnerd.utils.database.orm.annotations.Named;
+import com.frostnerd.utils.database.orm.annotations.Table;
 
 /**
  * Copyright Daniel Wolf 2017
@@ -11,5 +13,8 @@ import com.frostnerd.utils.database.orm.Entity;
  * <p>
  * development@frostnerd.com
  */
+@Table(name = "UpstreamResponse")
 public class UpstreamResponse extends Entity{
+    @Named(name = "ForQuery")
+    private DNSQuery forQuery;
 }
