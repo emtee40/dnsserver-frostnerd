@@ -65,6 +65,8 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
     private DNSServer.QueryListener queryListener;
     @Ignore
     private List<ServerStateListener> serverStateListeners = new ArrayList<>();
+    @Ignore
+    private int localRedirectPort = -1;
 
     public DNSServerSetting(){
 
@@ -92,6 +94,14 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
         else for(ServerStateListener listener: serverStateListeners)listener.serverStopped();
     }
 
+    public int getLocalRedirectPort() {
+        return localRedirectPort;
+    }
+
+    public void setLocalRedirectPort(int localRedirectPort) {
+        this.localRedirectPort = localRedirectPort;
+    }
+
     public boolean isUdp() {
         return udp;
     }
@@ -101,7 +111,7 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
     }
 
     public int getPort() {
-        return port;
+        return localRedirectPort == -1 ? port : localRedirectPort;
     }
 
     public int getServerTimeout() {
