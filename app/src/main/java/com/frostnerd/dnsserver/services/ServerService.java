@@ -38,6 +38,8 @@ public class ServerService extends NotificationService {
         notificationBuilder = new NotificationCompat.Builder(this, Util.createNotificationChannel(this, false));
         notificationBuilder.setContentTitle(getString(R.string.app_name));
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        notificationBuilder.setOngoing(true);
+        notificationBuilder.setAutoCancel(false);
     }
 
     @Override
@@ -88,5 +90,10 @@ public class ServerService extends NotificationService {
     @Override
     public boolean foregroundMode() {
         return true;
+    }
+
+    @Override
+    public boolean removeNotificationOnTaskRemoval() {
+        return false;
     }
 }
