@@ -6,7 +6,6 @@ import com.frostnerd.dnsserver.database.ServerDatabaseHelper;
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
 import com.frostnerd.dnsserver.util.DNSResolver;
 import com.frostnerd.dnsserver.util.QueryLogger;
-import com.frostnerd.dnsserver.util.Util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -78,6 +77,7 @@ public abstract class DNSServer implements Runnable {
         stopServer();
         resolver.cleanup();
         if(queryLogger != null)queryLogger.cleanup();
+        settings.setServerRunning(false);
         serverDatabase.close();
         serverDatabase = null;
         resolver = null;
@@ -85,6 +85,10 @@ public abstract class DNSServer implements Runnable {
         primaryAddress = null;
         secondaryAddress = null;
         settings = null;
+    }
+
+    public final DNSServerSetting getServerSetting(){
+        return settings;
     }
 
     public interface ErrorListener{
