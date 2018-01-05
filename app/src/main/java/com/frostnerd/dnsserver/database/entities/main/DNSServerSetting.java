@@ -53,6 +53,9 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
     @Named(name = "UDP")
     private boolean udp = true;
 
+    @Ignore
+    private boolean serverRunning;
+
     public DNSServerSetting(){
 
     }
@@ -69,9 +72,12 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
         this.resolveLocal = resolveLocal;
     }
 
-    public boolean isServerRunning(Context context){
-        //TODO
-        return false;
+    public boolean isServerRunning(){
+        return serverRunning;
+    }
+
+    public void setServerRunning(boolean serverRunning) {
+        this.serverRunning = serverRunning;
     }
 
     @Ignore
