@@ -43,12 +43,28 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         DNSServerSetting setting = dnsServerSettings.get(position);
+        setting.clearServerStateListeners();
         ((TextView)holder.itemView.findViewById(R.id.server_name)).setText(setting.getName());
         ((TextView)holder.itemView.findViewById(R.id.server_port)).setText(portText.replace("[x]", "" + setting.getPort()));
+        final ImageButton startStopButton = holder.itemView.findViewById(R.id.server_start_stop);
+        final View indicatorView =  holder.itemView.findViewById(R.id.server_status_indicator);
         if(!setting.isServerRunning()){
-            holder.itemView.findViewById(R.id.server_status_indicator).setBackgroundColor(serverNotRunningColor);
-            ((ImageButton)holder.itemView.findViewById(R.id.server_start_stop)).setImageResource(R.drawable.ic_play);
+            indicatorView.setBackgroundColor(serverNotRunningColor);
+            startStopButton.setImageResource(R.drawable.ic_play);
         }
+        setting.addServerStateListener(new DNSServerSetting.ServerStateListener() {
+            @Override
+            public void serverStarted() {
+                indicatorView.setBackgroundColor(Color.parseColor("#00FF00"));
+                startStopButton.setImageResource(R.drawable.ic_stop);
+            }
+
+            @Override
+            public void serverStopped() {
+                indicatorView.setBackgroundColor(serverNotRunningColor);
+                startStopButton.setImageResource(R.drawable.ic_play);
+            }
+        });
     }
 
     @Override

@@ -12,8 +12,11 @@ import com.frostnerd.utils.database.orm.annotations.NotNull;
 import com.frostnerd.utils.database.orm.annotations.RowID;
 import com.frostnerd.utils.database.orm.annotations.Serialized;
 import com.frostnerd.utils.database.orm.annotations.Table;
+import com.frostnerd.utils.database.orm.annotations.Unique;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Copyright Daniel Wolf 2017
@@ -29,6 +32,7 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
     @RowID
     private int rowID;
     @Named(name = "Name")
+    @Unique
     @NotNull
     private String name;
     @Named(name = "Port")
@@ -55,6 +59,12 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
 
     @Ignore
     private boolean serverRunning;
+    @Ignore
+    private DNSServer.ErrorListener errorListener;
+    @Ignore
+    private DNSServer.QueryListener queryListener;
+    @Ignore
+    private List<ServerStateListener> serverStateListeners = new ArrayList<>();
 
     public DNSServerSetting(){
 
@@ -78,12 +88,9 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
 
     public void setServerRunning(boolean serverRunning) {
         this.serverRunning = serverRunning;
+        if(serverRunning)for(ServerStateListener listener: serverStateListeners)listener.serverStarted();
+        else for(ServerStateListener listener: serverStateListeners)listener.serverStopped();
     }
-
-    @Ignore
-    private DNSServer.ErrorListener errorListener;
-    @Ignore
-    private DNSServer.QueryListener queryListener;
 
     public String getName() {
         return name;
@@ -135,5 +142,22 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
 
     public boolean shouldResolveLocal(){
         return resolveLocal;
+    }
+
+    public void addServerStateListener(ServerStateListener listener){
+        serverStateListeners.add(listener);
+    }
+
+    public void removeServerStateListener(ServerStateListener listener){
+        serverStateListeners.remove(listener);
+    }
+
+    public void clearServerStateListeners(){
+        serverStateListeners.clear();
+    }
+
+    public interface ServerStateListener{
+        public void serverStarted();
+        public void serverStopped();
     }
 }
