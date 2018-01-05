@@ -7,4 +7,7 @@
     <string name="notification_channel_default">Default Channel</string>
     <string name="notification_channel_default_description">Default channel for posting notifications.</string>
     <string name="x_servers_running">[x] servers running</string>
+    <string name="dialog_title_root_needed">Root needed</string>
+    <string name="root_needed_explain">Root access is needed to access ports below 1024. You\'ll be asked to grant root permission to this app in the next window. If you deny it or your device is not rooted the selected server won\'t be startet.</string>
+    <string name="dont_show_again">Don\'t show again</string>
 </resources>

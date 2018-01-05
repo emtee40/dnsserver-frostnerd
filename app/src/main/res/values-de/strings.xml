@@ -8,4 +8,7 @@
     <string name="notification_channel_hiddenicon">Channel ohne Icon</string>
     <string name="notification_channel_hiddenicon_description">Dieser Channel zeigt kein Symbol in der Benachrichtigungsleiste</string>
     <string name="x_servers_running">[x] servers aktiv</string>
+    <string name="dialog_title_root_needed">Root benötigt</string>
+    <string name="root_needed_explain">Rootzugriff wird benötigt, um auf Ports unter 1024 zuzugreifen. Du wirst im nächsten Fenster gefragt dieser App Rootrechte zu erteilen. Ist dein Gerät nicht gerootet oder du verbietest dies wird der ausgewählte Server nicht starten.</string>
+    <string name="dont_show_again">Nicht nochmal zeigen</string>
 </resources>

@@ -15,9 +15,9 @@ import android.widget.TextView;
 
 import com.frostnerd.dnsserver.R;
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
+import com.frostnerd.dnsserver.dialogs.RootRequestDialog;
 import com.frostnerd.dnsserver.services.ServerService;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -100,10 +100,14 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
         startStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String cmd = setting.isServerRunning() ? ServerService.COMMAND_STOP_SERVER : ServerService.COMMAND_START_SERVER;
-                Intent intent = new Intent(context, ServerService.class).putExtra(cmd, setting.getName());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)context.startForegroundService(intent);
-                else context.startService(new Intent(context, ServerService.class));
+                if(setting.getPort() <= 1024){
+                    new RootRequestDialog(context, setting);
+                }else{
+                    String cmd = setting.isServerRunning() ? ServerService.COMMAND_STOP_SERVER : ServerService.COMMAND_START_SERVER;
+                    Intent intent = new Intent(context, ServerService.class).putExtra(cmd, setting.getName());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)context.startForegroundService(intent);
+                    else context.startService(intent);
+                }
             }
         });
     }
