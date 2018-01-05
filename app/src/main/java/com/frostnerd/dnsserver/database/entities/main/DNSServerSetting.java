@@ -48,6 +48,8 @@ public class DNSServerSetting extends Entity implements Serializable{
     private boolean upstreamUDP;
     @Named(name = "ResolveLocal")
     private boolean resolveLocal;
+    @Named(name = "UDP")
+    private boolean udp = true;
 
     public DNSServerSetting(){
 
