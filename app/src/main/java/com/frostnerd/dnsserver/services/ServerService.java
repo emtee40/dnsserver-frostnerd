@@ -1,6 +1,7 @@
 package com.frostnerd.dnsserver.services;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import com.frostnerd.dnsserver.R;
+import com.frostnerd.dnsserver.activities.MainActivity;
 import com.frostnerd.dnsserver.database.entities.main.DNSServerSetting;
 import com.frostnerd.dnsserver.server.DNSServer;
 import com.frostnerd.dnsserver.server.TCPServer;
@@ -37,6 +39,7 @@ public class ServerService extends NotificationService {
         super.onCreate();
         notificationBuilder = new NotificationCompat.Builder(this, Util.createNotificationChannel(this, false));
         notificationBuilder.setContentTitle(getString(R.string.app_name));
+        notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 10, new Intent(this, MainActivity.class), PendingIntent.FLAG_ONE_SHOT));
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setOngoing(true);
         notificationBuilder.setAutoCancel(false);
