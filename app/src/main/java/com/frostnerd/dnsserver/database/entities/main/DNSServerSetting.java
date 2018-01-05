@@ -92,6 +92,10 @@ public class DNSServerSetting extends SingletonEntity implements Serializable{
         else for(ServerStateListener listener: serverStateListeners)listener.serverStopped();
     }
 
+    public boolean isUdp() {
+        return udp;
+    }
+
     public String getName() {
         return name;
     }
