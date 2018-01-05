@@ -3,4 +3,9 @@
     <string name="app_name">DNS Server</string>
     <string name="new_server">Neuer Server</string>
     <string name="server_port_label">Port: [x]</string>
+    <string name="notification_channel_default">Standardchannel</string>
+    <string name="notification_channel_default_description">Standardchannel für Benachrichtigungen</string>
+    <string name="notification_channel_hiddenicon">Channel ohne Icon</string>
+    <string name="notification_channel_hiddenicon_description">Dieser Channel zeigt kein Symbol in der Benachrichtigungsleiste</string>
+    <string name="x_servers_running">[x] servers aktiv</string>
 </resources>

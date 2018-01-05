@@ -2,4 +2,9 @@
     <string name="app_name">DNS Server</string>
     <string name="new_server">New server</string>
     <string name="server_port_label">Port: [x]</string>
+    <string name="notification_channel_hiddenicon">Channel with no icon</string>
+    <string name="notification_channel_hiddenicon_description">This channel shows no icon in the notification bar</string>
+    <string name="notification_channel_default">Default Channel</string>
+    <string name="notification_channel_default_description">Default channel for posting notifications.</string>
+    <string name="x_servers_running">[x] servers running</string>
 </resources>
