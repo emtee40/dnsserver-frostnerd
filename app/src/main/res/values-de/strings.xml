@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DNS Server</string>
-    <string name="new_server">New server</string>
+    <string name="new_server">Neuer Server</string>
     <string name="server_port_label">Port: [x]</string>
 </resources>
