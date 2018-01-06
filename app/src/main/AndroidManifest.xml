@@ -3,6 +3,7 @@
     package="com.frostnerd.dnsserver">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +20,15 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.ServerService" android:stopWithTask="false"/>
+        <service
+            android:name=".services.ServerService"
+            android:stopWithTask="false" />
+        <receiver android:name=".receivers.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
