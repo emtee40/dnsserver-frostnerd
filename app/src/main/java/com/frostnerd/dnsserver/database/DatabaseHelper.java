@@ -39,7 +39,7 @@ public final class DatabaseHelper extends com.frostnerd.utils.database.DatabaseH
 
     @Override
     public void onAfterCreate(SQLiteDatabase db) {
-
+        insertTestdata();
     }
 
     @Override
@@ -49,6 +49,15 @@ public final class DatabaseHelper extends com.frostnerd.utils.database.DatabaseH
 
     @Override
     public void onAfterUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+
+    private void insertTestdata(){
+        for(int i = 0; i <= 30; i++){
+            insert(new DNSServerSetting("SERVER " + i, (int)Math.pow(1.4,i), 1000,
+                    IPPortPair.wrap("8.8.8.8", 53),
+                    IPPortPair.wrap("8.8.4.4", 53), i%2 == 0, i%2==0, i%2 == 0, i%2==0));
+        }
 
     }
 }
